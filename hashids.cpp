@@ -125,7 +125,8 @@ std::string Hashids::encodeHex(const std::string &input) const {
   std::string buffer;
   std::string hex("0123456789abcdefABCDEF");
 
-  for (char c : input) {
+  for (std::string::size_type i = 0; i < input.size(); ++i) {
+    char c = input[i];
     if (hex.find_first_of(c) != std::string::npos)
       buffer.push_back(c);
     if (buffer.size() == 12) {
@@ -142,7 +143,9 @@ std::string Hashids::encodeHex(const std::string &input) const {
 std::string Hashids::decodeHex(const std::string &input) const {
   std::stringstream output;
   std::stringstream hexbuf;
-  for (uint64_t number : decode(input)) {
+  std::vector<uint64_t> decodedInput = decode(input);
+  for (std::vector<uint64_t>::size_type i = 0; i < decodedInput.size(); ++i) {
+    uint64_t number = decodedInput[i];
     hexbuf << std::hex << number;
     output << hexbuf.str().substr(1);
     hexbuf.str(std::string());
@@ -156,7 +159,9 @@ uint64_t Hashids::_unhash(const std::string &input,
   for (std::string::size_type i = 0; i < input.size(); ++i) {
     char c = input[i];
     std::string::size_type pos = alphabet.find(c);
-    output += pos * std::pow(alphabet.size(), input.size() - i - 1);
+    output += pos * static_cast<uint64_t>(std::pow(
+                        static_cast<double>(alphabet.size()),
+                        static_cast<double>(input.size() - i - 1)));
   };
 
   return output;
@@ -191,7 +196,8 @@ std::vector<std::string> Hashids::_split(const std::string &input,
   std::vector<std::string> parts;
   std::string tmp;
 
-  for (char c : input) {
+  for (std::string::size_type i = 0; i < input.size(); ++i) {
+    char c = input[i];
     if (splitters.find(c) != std::string::npos) {
       parts.push_back(tmp);
       tmp.clear();
@@ -224,7 +230,9 @@ std::vector<uint64_t> Hashids::decode(const std::string &input) const {
   hashid.erase(hashid.begin());
 
   std::vector<std::string> hash_parts = _split(hashid, _separators);
-  for (const std::string &part : hash_parts) {
+  for (std::vector<std::string>::const_iterator it = hash_parts.cbegin();
+      it != hash_parts.cend(); ++it) {
+    const std::string &part = *it;
     std::string alphabet_salt = (lottery + _salt + alphabet);
     alphabet_salt = alphabet_salt.substr(0, alphabet.size());
 
