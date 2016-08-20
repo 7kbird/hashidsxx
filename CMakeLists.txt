@@ -1,18 +1,18 @@
 project(hashids)
 cmake_minimum_required(VERSION 2.6)
 
-option(BUILD_TESTS "Enable test" OFF)
-option(BUILD_HASHIDSXX "Build hashidsxx executable" OFF)
+option(HASHID_BUILD_TESTS "Enable test" OFF)
+option(HASHID_BUILD_HASHIDSXX "Build hashidsxx executable" OFF)
 
 add_library(hashids STATIC
   hashids.h hashids.cpp)
 
-if(BUILD_HASHIDSXX AND UNIX)
+if(HASHID_BUILD_HASHIDSXX AND UNIX)
   add_executable(hashidsxx hashidsxx.cpp)
   target_link_libraries(hashidsxx hashids)
 endif()
 
-if(BUILD_TESTS)
+if(HASHID_BUILD_TESTS)
   enable_testing()
   file(MAKE_DIRECTORY thirdparty)
   file(DOWNLOAD
